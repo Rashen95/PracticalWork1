@@ -3,15 +3,19 @@ import java.util.List;
 
 public class ThreadsController {
     private ThreadCountListener listener;
+    private ThreadWriter writer;
     private final List<Thread> ALL_THREADS = new ArrayList<>();
     private byte queensPerProcessor;
     private byte remainder;
     private byte lowLimitForZeroColumn = 0;
     private byte upLimitForZeroColumn = 0;
-    private final Object monitor = new Object();
+    public static final Object monitor = new Object();
 
     public void start() throws InterruptedException {
         listener = new ThreadCountListener("listener1", (short) 1);
+        if (Settings.getNeedWrite()) {
+            writer = new ThreadWriter("writer1");
+        }
         if (Settings.isUseAllThreads()) {
             MultiThreadingRun();
         } else {
@@ -30,9 +34,16 @@ public class ThreadsController {
                         (byte) Settings.getGameBoardSize(),
                         monitor));
         listener.start();
+        if (writer != null) {
+            writer.start();
+        }
         oneThread.start();
         oneThread.join();
         listener.disable();
+        if (writer != null) {
+            writer.writeToFile(PlacesQueen.gameBoards);
+            writer.disable();
+        }
     }
 
     public void MultiThreadingRun() throws InterruptedException {
@@ -45,6 +56,9 @@ public class ThreadsController {
             upLimitForZeroColumn = queensPerProcessor;
             // Запускаем слушателя
             listener.start();
+            if (writer != null) {
+                writer.start();
+            }
             for (byte i = 0; i < Settings.getGameBoardSize(); i++) {
                 createThreads(i);
             }
@@ -58,6 +72,9 @@ public class ThreadsController {
                 upLimitForZeroColumn = queensPerProcessor;
             }
             listener.start();
+            if (writer != null) {
+                writer.start();
+            }
             for (byte i = 0; i < processors; i++) {
                 createThreads(i);
             }
@@ -69,6 +86,11 @@ public class ThreadsController {
 
         //Выключаем слушателя
         listener.disable();
+
+        if (writer != null) {
+            writer.writeToFile(PlacesQueen.gameBoards);
+            writer.disable();
+        }
     }
 
     private void createThreads(byte nameThread) {

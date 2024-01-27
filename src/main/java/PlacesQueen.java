@@ -1,8 +1,5 @@
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class PlacesQueen {
     public volatile static Long count = 0L;
@@ -11,6 +8,7 @@ public class PlacesQueen {
     private final byte lowLimitForZeroColumn;
     private final byte upLimitForZeroColumn;
     private final Object monitor;
+    public volatile static boolean hashSetIsFull = false;
 
     public PlacesQueen(byte gameBoardSize, byte lowLimitForZeroColumn, byte upLimitForZeroColumn, Object monitor) {
         this.gameBoardSize = gameBoardSize;
@@ -65,13 +63,23 @@ public class PlacesQueen {
      * @param gameBoard игровое поле
      * @param column    колонка для установки ферзя
      */
-    public void tryToPlace(byte[][] gameBoard, byte column) throws InterruptedException {
+    public void tryToPlace(byte[][] gameBoard, byte column)  {
         if (column == gameBoard.length) {
             byte[][] copiedGameBoard = new byte[gameBoardSize][gameBoardSize];
             for (int i = 0; i < gameBoardSize; i++) {
                 System.arraycopy(gameBoard[i], 0, copiedGameBoard[i], 0, gameBoardSize);
             }
             synchronized (monitor) {
+                if (gameBoards.size() >= 1_000_000) {
+                    hashSetIsFull = true;
+                    while (hashSetIsFull) {
+                        try {
+                            monitor.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
                 count++;
                 gameBoards.add(copiedGameBoard);
             }

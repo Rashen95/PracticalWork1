@@ -8,10 +8,6 @@ public class ThreadForPlacesQueen extends Thread {
 
     @Override
     public void run() {
-        try {
-            pQ.tryToPlace(pQ.createEmptyGameBoard(), (byte) 0);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        pQ.tryToPlace(pQ.createEmptyGameBoard(), (byte) 0);
     }
 }
