@@ -1,5 +1,3 @@
-import java.time.LocalDateTime;
-
 public class ThreadCountListener extends Thread {
     private volatile boolean isActivate = true;
     private final short frequency;

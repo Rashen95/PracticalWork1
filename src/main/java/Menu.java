@@ -41,7 +41,7 @@ public class Menu {
 
     private void changeGameBoardSize() {
         System.out.print("""
-                Введите число (от 1 до 100), которое будет являться размером поля
+                Введите число (от 1 до 30), которое будет являться размером поля
                 N x N и количеством королев одновременно:""");
         while (true) {
             Scanner scan = new Scanner(System.in);
@@ -49,22 +49,22 @@ public class Menu {
             String gameBoardSizeString = scan.nextLine().trim();
             if (Pattern.matches("-?\\d+", gameBoardSizeString)) {
                 gameBoardSizeInt = Integer.parseInt(gameBoardSizeString);
-                if (gameBoardSizeInt > 0 && gameBoardSizeInt <= 100) {
+                if (gameBoardSizeInt > 0 && gameBoardSizeInt <= 30) {
                     Settings.setGameBoardSize((byte) gameBoardSizeInt);
                     System.out.println();
                     break;
                 } else {
-                    System.out.print("Вы ввели неверное число, попробуйте еще раз. Введите число от 1 до 100:");
+                    System.out.print("Вы ввели неверное число, попробуйте еще раз. Введите число от 1 до 30:");
                 }
             } else {
-                System.out.print("Вы ввели не число, попробуйте еще раз. Введите число от 1 до 100:");
+                System.out.print("Вы ввели не число, попробуйте еще раз. Введите число от 1 до 30:");
             }
         }
     }
 
     public void changeWriteMode() {
         System.out.print("""
-                Я могу записать все найденные варианты в txt файл,но учтите, что у поля 15х15 уже
+                Я могу записать все найденные варианты в txt файл, но учтите, что у поля 15х15 уже
                 будет больше 2 миллионов вариантов, а дальше все больше в геометрической прогрессии
                 Вы хотите записать все найденные результаты в txt файл? (y/n):""");
         while (true) {

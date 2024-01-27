@@ -16,12 +16,15 @@ public class ThreadsController {
     }
 
     public void start() {
+        long startTime = System.currentTimeMillis();
         if (Settings.isUseAllThreads()) {
             MultiThreadingRun();
         } else {
             singleThreadingRun();
         }
-        System.out.printf("%s Работа приложения завершена\n", TimeGenerator.getCurrentTime());
+        long endTime = System.currentTimeMillis();
+        double timeElapsed = (double) (endTime - startTime) / 1000;
+        System.out.printf("%s Работа приложения завершена, на вычисления потребовалось %s секунд\n", TimeGenerator.getCurrentTime(), timeElapsed);
     }
 
     private void singleThreadingRun() {
@@ -32,7 +35,8 @@ public class ThreadsController {
                         lowLimitForZeroColumn,
                         (byte) Settings.getGameBoardSize(),
                         monitor));
-        //Запуск listener и writer
+
+        //Запуск listener и если нужно writer
         listener.start();
         if (Settings.getNeedWrite()) {
             writer.start();
@@ -46,16 +50,18 @@ public class ThreadsController {
             throw new RuntimeException(e);
         }
 
-        //Отключение listener и writer
+        //Отключение listener
         listener.disable();
-
         System.out.printf("%s %s всего вариантов существует\n", TimeGenerator.getCurrentTime(), PlacesQueen.getCount());
-        System.out.printf("%s Дозаписываю файл\n", TimeGenerator.getCurrentTime());
 
-        while (true) {
-            if (ThreadWriter.getCount() == PlacesQueen.getCount()) {
-                writer.disable();
-                break;
+        //Отключение writer, если был заупущен
+        if (Settings.getNeedWrite()) {
+            System.out.printf("%s Дозаписываю файл\n", TimeGenerator.getCurrentTime());
+            while (true) {
+                if (ThreadWriter.getCount() == PlacesQueen.getCount()) {
+                    writer.disable();
+                    break;
+                }
             }
         }
     }
@@ -64,11 +70,11 @@ public class ThreadsController {
         //Распределяем нагрузку на потоки исходя из количества колонок
         byte processors = (byte) Runtime.getRuntime().availableProcessors();
 
-        //Если колонок меньше процессоров, то выделяем под каждую колонку по 1 процессору
+        //Если колонок меньше потоков, то выделяем под каждую колонку по 1 потоку
         if (processors > Settings.getGameBoardSize()) {
             upLimitForZeroColumn = queensPerProcessor;
 
-            //Запускаем listener и writer
+            //Запускаем listener и если нужно writer
             listener.start();
             if (Settings.getNeedWrite()) {
                 writer.start();
@@ -92,19 +98,19 @@ public class ThreadsController {
                 upLimitForZeroColumn = queensPerProcessor;
             }
 
-            //Запускаем listener и writer
+            //Запускаем listener и если нужно writer
             listener.start();
             if (Settings.getNeedWrite()) {
                 writer.start();
             }
 
-            //Запускаем все процессоры
+            //Запускаем все потоки
             for (byte i = 0; i < processors; i++) {
                 createThreads(i);
             }
         }
 
-        //Просим основной поток ждать завершения работы всех процессоров
+        //Просим основной поток ждать завершения работы потоков ищущих решения
         for (Thread t : ALL_THREADS_FOR_PLACES_QUEEN) {
             try {
                 t.join();
@@ -115,20 +121,23 @@ public class ThreadsController {
 
         //Выключаем слушателя
         listener.disable();
-
         System.out.printf("%s %s всего вариантов существует\n", TimeGenerator.getCurrentTime(), PlacesQueen.getCount());
-        System.out.printf("%s Дозаписываю файл\n", TimeGenerator.getCurrentTime());
 
-        while (true) {
-            if (ThreadWriter.getCount() == PlacesQueen.getCount()) {
-                writer.disable();
-                break;
+        //Отключение writer, если был заупущен
+        if (Settings.getNeedWrite()) {
+            System.out.printf("%s Дозаписываю файл\n", TimeGenerator.getCurrentTime());
+            while (true) {
+                if (ThreadWriter.getCount() == PlacesQueen.getCount()) {
+                    writer.disable();
+                    break;
+                }
             }
         }
     }
 
     /**
-     * Создает и запускает поток, а так же смещает лимиты
+     * Создает и запускает поток, а так же смещает лимиты для первой колонки
+     *
      * @param nameThread имя потока
      */
     private void createThreads(byte nameThread) {
