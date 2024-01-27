@@ -5,16 +5,18 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class PlacesQueen {
-    public static AtomicLong count = new AtomicLong();
-    public static Set<byte[][]> gameBoards = Collections.synchronizedSet(new HashSet<>());
+    public volatile static Long count = 0L;
+    public volatile static HashSet<byte[][]> gameBoards = new HashSet<>();
     private final byte gameBoardSize;
     private final byte lowLimitForZeroColumn;
     private final byte upLimitForZeroColumn;
+    private final Object monitor;
 
-    public PlacesQueen(byte gameBoardSize, byte lowLimitForZeroColumn, byte upLimitForZeroColumn) {
+    public PlacesQueen(byte gameBoardSize, byte lowLimitForZeroColumn, byte upLimitForZeroColumn, Object monitor) {
         this.gameBoardSize = gameBoardSize;
         this.lowLimitForZeroColumn = lowLimitForZeroColumn;
         this.upLimitForZeroColumn = upLimitForZeroColumn;
+        this.monitor = monitor;
     }
 
     /**
@@ -69,15 +71,10 @@ public class PlacesQueen {
             for (int i = 0; i < gameBoardSize; i++) {
                 System.arraycopy(gameBoard[i], 0, copiedGameBoard[i], 0, gameBoardSize);
             }
-            for (int i = 0; i < gameBoardSize; i++) {
-                for (int j = 0; j < gameBoardSize; j++) {
-                    System.out.print(copiedGameBoard[i][j]);
-                }
-                System.out.println();
+            synchronized (monitor) {
+                count++;
+                gameBoards.add(copiedGameBoard);
             }
-            System.out.println();
-            count.getAndIncrement();
-            gameBoards.add(copiedGameBoard);
             return;
         }
         if (column == 0) {

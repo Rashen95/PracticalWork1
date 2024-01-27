@@ -1,5 +1,5 @@
 public class MainApp {
     public static void main(String[] args) {
-        new Menu().menu();
+        new Menu().start();
     }
 }

@@ -2,7 +2,7 @@ import java.time.LocalDateTime;
 
 public class ThreadCountListener extends Thread {
     private final short frequency;
-    private boolean isActivate = true;
+    private volatile boolean isActivate = true;
 
     public ThreadCountListener(String name, short frequency) {
         super(name);
@@ -31,7 +31,7 @@ public class ThreadCountListener extends Thread {
                 hour = (byte) lDT.getHour();
                 minute = (byte) lDT.getMinute();
                 second = (byte) lDT.getSecond();
-                System.out.printf("[%s:%s:%s] %s вариантов найдено\n", hour, minute, second, PlacesQueen.count.get());
+                System.out.printf("[%s:%s:%s] %s вариантов найдено\n", hour, minute, second, PlacesQueen.count);
             }
         }
     }

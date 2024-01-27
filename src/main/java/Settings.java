@@ -1,6 +1,6 @@
 public class Settings {
     private static byte gameBoardSize;
-    private static int needWrite;
+    private static boolean isNeedWrite;
     private static boolean useAllThreads;
 
     public static int getGameBoardSize() {
@@ -11,12 +11,12 @@ public class Settings {
         Settings.gameBoardSize = gameBoardSize;
     }
 
-    public static int getNeedWrite() {
-        return needWrite;
+    public static boolean getNeedWrite() {
+        return isNeedWrite;
     }
 
-    public static void setNeedWrite(int needWrite) {
-        Settings.needWrite = needWrite;
+    public static void setNeedWrite(boolean isNeedWrite) {
+        Settings.isNeedWrite = isNeedWrite;
     }
 
     public static boolean isUseAllThreads() {
