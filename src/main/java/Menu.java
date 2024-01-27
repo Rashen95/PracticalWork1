@@ -4,16 +4,16 @@ import java.util.regex.Pattern;
 public class Menu {
     public void start() {
         greetings();
-        changeMultithreadingMode();
         changeGameBoardSize();
         changeWriteMode();
+        changeMultithreadingMode();
         new ThreadsController().start();
     }
 
     private void greetings() {
         System.out.println("""
                 Данная программа находит все возможные варианты расположения
-                N королев на шахматном поле размером N x N,
+                N ферзей на шахматном поле размером N x N,
                 так чтобы они не били друг друга
                 """);
     }
@@ -41,23 +41,23 @@ public class Menu {
 
     private void changeGameBoardSize() {
         System.out.print("""
-                Введите число (от 1 до 30), которое будет являться размером поля
-                N x N и количеством королев одновременно:""");
+                Введите число (от 4 до 30), которое будет являться размером поля
+                N x N и количеством ферзей одновременно:""");
         while (true) {
             Scanner scan = new Scanner(System.in);
             int gameBoardSizeInt;
             String gameBoardSizeString = scan.nextLine().trim();
             if (Pattern.matches("-?\\d+", gameBoardSizeString)) {
                 gameBoardSizeInt = Integer.parseInt(gameBoardSizeString);
-                if (gameBoardSizeInt > 0 && gameBoardSizeInt <= 30) {
+                if (gameBoardSizeInt > 3 && gameBoardSizeInt <= 30) {
                     Settings.setGameBoardSize((byte) gameBoardSizeInt);
                     System.out.println();
                     break;
                 } else {
-                    System.out.print("Вы ввели неверное число, попробуйте еще раз. Введите число от 1 до 30:");
+                    System.out.print("Вы ввели неверное число, попробуйте еще раз. Введите число от 4 до 30:");
                 }
             } else {
-                System.out.print("Вы ввели не число, попробуйте еще раз. Введите число от 1 до 30:");
+                System.out.print("Вы ввели не число, попробуйте еще раз. Введите число от 4 до 30:");
             }
         }
     }
