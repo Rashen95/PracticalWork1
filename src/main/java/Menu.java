@@ -7,12 +7,7 @@ public class Menu {
         changeMultithreadingMode();
         changeGameBoardSize();
         changeWriteMode();
-        ThreadsController tC = new ThreadsController();
-        try {
-            tC.start();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        new ThreadsController().start();
     }
 
     private void greetings() {
@@ -69,9 +64,9 @@ public class Menu {
 
     public void changeWriteMode() {
         System.out.print("""
-                Я могу записать все найденные варианты в txt файл,
-                но учтите, что у поля 12х12 уже будет 14200 вариантов, а дальше все больше в геометрической прогрессии
-                Вы хотите записать все найденные результаты в файл? (y/n):""");
+                Я могу записать все найденные варианты в txt файл,но учтите, что у поля 15х15 уже
+                будет больше 2 миллионов вариантов, а дальше все больше в геометрической прогрессии
+                Вы хотите записать все найденные результаты в txt файл? (y/n):""");
         while (true) {
             Scanner scan = new Scanner(System.in);
             String isNeedWrite = scan.nextLine().trim().toLowerCase();

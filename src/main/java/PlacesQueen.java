@@ -1,20 +1,32 @@
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.HashSet;
 
 public class PlacesQueen {
-    public volatile static Long count = 0L;
-    public volatile static HashSet<byte[][]> gameBoards = new HashSet<>();
+    private volatile static Long count = 0L;
+    private volatile static boolean dequeFull = false;
+    private static final ArrayDeque<byte[][]> gameBoards = new ArrayDeque<>();
     private final byte gameBoardSize;
     private final byte lowLimitForZeroColumn;
     private final byte upLimitForZeroColumn;
     private final Object monitor;
-    public volatile static boolean hashSetIsFull = false;
 
     public PlacesQueen(byte gameBoardSize, byte lowLimitForZeroColumn, byte upLimitForZeroColumn, Object monitor) {
         this.gameBoardSize = gameBoardSize;
         this.lowLimitForZeroColumn = lowLimitForZeroColumn;
         this.upLimitForZeroColumn = upLimitForZeroColumn;
         this.monitor = monitor;
+    }
+
+    public static Long getCount() {
+        return count;
+    }
+
+    public static void setDequeFull(boolean dequeFull) {
+        PlacesQueen.dequeFull = dequeFull;
+    }
+
+    public static ArrayDeque<byte[][]> getGameBoards() {
+        return gameBoards;
     }
 
     /**
@@ -63,16 +75,17 @@ public class PlacesQueen {
      * @param gameBoard игровое поле
      * @param column    колонка для установки ферзя
      */
-    public void tryToPlace(byte[][] gameBoard, byte column)  {
+    public void tryToPlace(byte[][] gameBoard, byte column) {
         if (column == gameBoard.length) {
             byte[][] copiedGameBoard = new byte[gameBoardSize][gameBoardSize];
-            for (int i = 0; i < gameBoardSize; i++) {
+            for (byte i = 0; i < gameBoardSize; i++) {
                 System.arraycopy(gameBoard[i], 0, copiedGameBoard[i], 0, gameBoardSize);
             }
             synchronized (monitor) {
-                if (gameBoards.size() >= 1_000_000) {
-                    hashSetIsFull = true;
-                    while (hashSetIsFull) {
+                if (count - ThreadWriter.getCount() >= 3_000_000) {
+                    dequeFull = true;
+                    ThreadWriter.setEmergencySituation(true);
+                    while (dequeFull) {
                         try {
                             monitor.wait();
                         } catch (InterruptedException e) {
@@ -81,7 +94,7 @@ public class PlacesQueen {
                     }
                 }
                 count++;
-                gameBoards.add(copiedGameBoard);
+                gameBoards.addLast(copiedGameBoard);
             }
             return;
         }
