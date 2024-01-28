@@ -41,7 +41,7 @@ public class Menu {
 
     private void changeGameBoardSize() {
         System.out.print("""
-                Введите число (от 4 до 30), которое будет являться размером поля
+                Введите число (от 4 до 50), которое будет являться размером поля
                 N x N и количеством ферзей одновременно:""");
         while (true) {
             Scanner scan = new Scanner(System.in);
@@ -49,15 +49,15 @@ public class Menu {
             String gameBoardSizeString = scan.nextLine().trim();
             if (Pattern.matches("-?\\d+", gameBoardSizeString)) {
                 gameBoardSizeInt = Integer.parseInt(gameBoardSizeString);
-                if (gameBoardSizeInt > 3 && gameBoardSizeInt <= 30) {
+                if (gameBoardSizeInt > 3 && gameBoardSizeInt <= 50) {
                     Settings.setGameBoardSize((byte) gameBoardSizeInt);
                     System.out.println();
                     break;
                 } else {
-                    System.out.print("Вы ввели неверное число, попробуйте еще раз. Введите число от 4 до 30:");
+                    System.out.print("Вы ввели неверное число, попробуйте еще раз. Введите число от 4 до 50:");
                 }
             } else {
-                System.out.print("Вы ввели не число, попробуйте еще раз. Введите число от 4 до 30:");
+                System.out.print("Вы ввели не число, попробуйте еще раз. Введите число от 4 до 50:");
             }
         }
     }

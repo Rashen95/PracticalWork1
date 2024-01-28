@@ -24,7 +24,11 @@ public class ThreadsController {
         }
         long endTime = System.currentTimeMillis();
         double timeElapsed = (double) (endTime - startTime) / 1000;
-        System.out.printf("%s Работа приложения завершена, на вычисления потребовалось %s секунд\n", TimeGenerator.getCurrentTime(), timeElapsed);
+        if (Settings.getNeedWrite()) {
+            System.out.printf("%s Работа приложения завершена, на вычисления и запись в файл потребовалось %s секунд\n", TimeGenerator.getCurrentTime(), timeElapsed);
+        } else {
+            System.out.printf("%s Работа приложения завершена, на вычисления потребовалось %s секунд\n", TimeGenerator.getCurrentTime(), timeElapsed);
+        }
     }
 
     private void singleThreadingRun() {
@@ -52,7 +56,8 @@ public class ThreadsController {
 
         //Отключение listener
         listener.disable();
-        System.out.printf("%s %s всего вариантов существует\n", TimeGenerator.getCurrentTime(), PlacesQueen.getCount());
+        String count = ThreadCountListener.getNumberWithSeparator(Long.toString(PlacesQueen.getCount()));
+        System.out.printf("%s %s всего вариантов удовлетворяющих условию существует\n", TimeGenerator.getCurrentTime(), count);
 
         //Отключение writer, если был заупущен
         if (Settings.getNeedWrite()) {
@@ -121,7 +126,8 @@ public class ThreadsController {
 
         //Выключаем слушателя
         listener.disable();
-        System.out.printf("%s %s всего вариантов существует\n", TimeGenerator.getCurrentTime(), PlacesQueen.getCount());
+        String count = ThreadCountListener.getNumberWithSeparator(Long.toString(PlacesQueen.getCount()));
+        System.out.printf("%s %s всего вариантов удовлетворяющих условию существует\n", TimeGenerator.getCurrentTime(), count);
 
         //Отключение writer, если был заупущен
         if (Settings.getNeedWrite()) {

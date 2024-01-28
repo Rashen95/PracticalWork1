@@ -21,8 +21,25 @@ public class ThreadCountListener extends Thread {
                 throw new RuntimeException(e);
             }
             if (isActivate && !ThreadWriter.isEmergencySituation()) {
-                System.out.printf("%s %s вариантов найдено\n", TimeGenerator.getCurrentTime(), PlacesQueen.getCount());
+                String count = getNumberWithSeparator(Long.toString(PlacesQueen.getCount()));
+                System.out.printf("%s %s вариантов удовлетворяющих условию найдено\n", TimeGenerator.getCurrentTime(), count);
             }
         }
+    }
+
+    public static String getNumberWithSeparator(String input) {
+        if (input == null || input.length() <= 3) {
+            return input;
+        }
+        StringBuilder result = new StringBuilder();
+        int length = input.length();
+        for (int i = length - 1, count = 0; i >= 0; i--, count++) {
+            result.insert(0, input.charAt(i));
+            if (count == 2 && i > 0) {
+                result.insert(0, '.');
+                count = -1;
+            }
+        }
+        return result.toString();
     }
 }

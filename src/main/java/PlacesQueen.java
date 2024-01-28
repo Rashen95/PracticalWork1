@@ -82,7 +82,7 @@ public class PlacesQueen {
                 System.arraycopy(gameBoard[i], 0, copiedGameBoard[i], 0, gameBoardSize);
             }
             synchronized (monitor) {
-                if (count - ThreadWriter.getCount() >= 3_000_000) {
+                if (Settings.getNeedWrite() && count - ThreadWriter.getCount() >= 3_000_000) {
                     dequeFull = true;
                     ThreadWriter.setEmergencySituation(true);
                     while (dequeFull) {
@@ -94,7 +94,9 @@ public class PlacesQueen {
                     }
                 }
                 count++;
-                gameBoards.addLast(copiedGameBoard);
+                if (Settings.getNeedWrite()) {
+                    gameBoards.addLast(copiedGameBoard);
+                }
             }
             return;
         }
